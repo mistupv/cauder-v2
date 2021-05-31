@@ -588,7 +588,7 @@ load_trace(Dir) ->
         pid := InitialPid,
         call := {Mod, Fun, Args},
         tracing := Tracing,
-        return := ReturnValue,
+        return := ReturnBinary,
         comp := CompTime,
         exec := ExecTime
     } = maps:from_list(ResultTerms),
@@ -607,6 +607,12 @@ load_trace(Dir) ->
             end,
             maps:new()
         ),
+
+    ReturnValue =
+        case ReturnBinary of
+            none -> none;
+            _ -> {value, erlang:binary_to_term(ReturnBinary)}
+        end,
 
     #trace_result{
         node = InitialNode,

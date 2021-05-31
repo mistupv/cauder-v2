@@ -3,5 +3,5 @@
 {exec,389}.
 {node,nonode@nohost}.
 {pid,81}.
-{return,{value,true}}.
+{return,<<131,119,4,116,114,117,101>>}.
 {tracing,success}.

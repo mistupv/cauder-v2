@@ -343,7 +343,7 @@ do_trace(Module, Function, Args, Opts) ->
         pid = pid_index(TracedPid),
         call = {Module, Function, Args},
         tracing = Tracing,
-        return = ReturnValue,
+        return = value_to_binary(ReturnValue),
         comp = CompTime,
         exec = ExecTime,
         traces = Traces
@@ -468,14 +468,17 @@ write_trace(Dir, TraceResult) ->
     end,
 
     ResultFile = filename:join(Dir, "trace_result.log"),
-    ResultContent = lists:join($\n, lists:map(fun(T) -> io_lib:format("~p.", [T]) end, maps:to_list(ResultInfo))),
+    ResultContent = lists:join($\n, lists:map(fun(T) -> io_lib:format("~w.", [T]) end, maps:to_list(ResultInfo))),
     ok = file:write_file(ResultFile, ResultContent),
 
     lists:foreach(
         fun({Index, List}) ->
             File = filename:join(Dir, io_lib:format("trace_~b.log", [Index])),
-            Content = lists:join($\n, lists:map(fun(T) -> io_lib:format("~p.", [T]) end, List)),
+            Content = lists:join($\n, lists:map(fun(T) -> io_lib:format("~w.", [T]) end, List)),
             ok = file:write_file(File, Content)
         end,
         maps:to_list(Traces)
     ).
+
+value_to_binary(none) -> none;
+value_to_binary({value, Value}) -> erlang:term_to_binary(Value, [compressed, {minor_version, 2}]).
